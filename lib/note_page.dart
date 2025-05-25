@@ -38,7 +38,12 @@ class _NotePageState extends State<NotePage> {
               TextButton(
                 onPressed: () {
                   //create a new note
-                  final newNote = Note(content: noteControllerr.text);
+                  final now = DateTime.now();
+                  final newNote = Note(
+                    content: noteControllerr.text,
+                    createdAt: now,
+                    updatedAt: now,
+                  );
                   // save in db
                   notesDatabase.createNote(newNote);
 
@@ -152,12 +157,13 @@ class _NotePageState extends State<NotePage> {
           return ListView.builder(
             itemCount: notes.length,
             itemBuilder: (context, index) {
-              //get each note
               final note = notes[index];
-
-              //list tile UI
               return ListTile(
                 title: Text(note.content),
+                subtitle: Text(
+                  'Dibuat: ${note.createdAt.toLocal().toString().substring(0, 16)}',
+                  style: TextStyle(fontSize: 12, color: Colors.grey),
+                ),
                 trailing: SizedBox(
                   width: 100,
                   child: Row(

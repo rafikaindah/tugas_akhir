@@ -1,8 +1,15 @@
 class Note {
-  int? id;
-  String content;
+  final int? id;
+  final String content;
+  final DateTime createdAt;
+  final DateTime updatedAt;
 
-  Note({this.id, required this.content});
+  Note({
+    this.id,
+    required this.content,
+    required this.createdAt,
+    required this.updatedAt,
+  });
 
   /*
 
@@ -22,10 +29,20 @@ Note(
 
   //map -> note
   factory Note.fromMap(Map<String, dynamic> map) {
-    return Note(id: map['id'] as int, content: map['content'] as String);
+    return Note(
+      id: map['id'],
+      content: map['content'],
+      createdAt: DateTime.parse(map['created_at']),
+      updatedAt: DateTime.parse(map['updated_at']),
+    );
   }
   //note -> map
   Map<String, dynamic> toMap() {
-    return {'content': content};
+    return {
+      'id': id,
+      'content': content,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+    };
   }
 }

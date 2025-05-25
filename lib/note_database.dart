@@ -7,7 +7,14 @@ class NoteDatabase {
 
   //Create
   Future createNote(Note newNote) async {
-    await database.insert(newNote.toMap());
+    final now = DateTime.now();
+    final noteWithDate = Note(
+      id: newNote.id,
+      content: newNote.content,
+      createdAt: now,
+      updatedAt: now,
+    );
+    await database.insert(noteWithDate.toMap());
   }
 
   //Read
@@ -18,7 +25,10 @@ class NoteDatabase {
 
   //Update
   Future updateNote(Note oldNote, String newContent) async {
-    await database.update({'content': newContent}).eq('id', oldNote.id!);
+    final now = DateTime.now();
+    await database
+        .update({'content': newContent, 'updated_at': now.toIso8601String()})
+        .eq('id', oldNote.id!);
   }
 
   //Delete
