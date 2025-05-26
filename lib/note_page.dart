@@ -36,19 +36,19 @@ class _NotePageState extends State<NotePage> {
 
               // save button
               TextButton(
-                onPressed: () {
-                  //create a new note
+                onPressed: () async {
+                  if (noteControllerr.text.trim().isEmpty) return;
                   final now = DateTime.now();
                   final newNote = Note(
                     content: noteControllerr.text,
                     createdAt: now,
                     updatedAt: now,
                   );
-                  // save in db
-                  notesDatabase.createNote(newNote);
+                  await notesDatabase.createNote(newNote);
 
                   Navigator.pop(context);
                   noteControllerr.clear();
+                  setState(() {});
                 },
                 child: const Text("Save"),
               ),
@@ -161,7 +161,8 @@ class _NotePageState extends State<NotePage> {
               return ListTile(
                 title: Text(note.content),
                 subtitle: Text(
-                  'Dibuat: ${note.createdAt.toLocal().toString().substring(0, 16)}',
+                  'tanggal: ${note.updatedAt.toLocal().toString().substring(0, 16)}',
+
                   style: TextStyle(fontSize: 12, color: Colors.grey),
                 ),
                 trailing: SizedBox(

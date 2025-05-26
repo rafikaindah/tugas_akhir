@@ -38,11 +38,14 @@ Note(
   }
   //note -> map
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
+    final map = {
       'content': content,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };
+    if (id != null) {
+      map['id'] = id.toString();
+    }
+    return map;
   }
 }
