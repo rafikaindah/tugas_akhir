@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/note.dart';
 import 'package:flutter_application_1/note_database.dart';
+import 'package:flutter_application_1/note_detail_page.dart';
 
 class NotePage extends StatefulWidget {
   const NotePage({super.key});
@@ -18,42 +19,60 @@ class _NotePageState extends State<NotePage> {
 
   // user wants to add new note
   void addNewNote() {
+    TextEditingController controller = TextEditingController();
+    bool isNoteEmpty = true;
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text("New Note"),
-            content: TextField(controller: noteControllerr),
-            actions: [
-              // cancel button
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  noteControllerr.clear();
-                },
-                child: const Text("Cancel"),
-              ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            controller.addListener(() {
+              setState(() {
+                isNoteEmpty = controller.text.trim().isEmpty;
+              });
+            });
+            return AlertDialog(
+              title: const Text("New Note"),
+              content: TextField(controller: controller),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    controller.clear();
+                  },
+                  child: const Text("Cancel"),
+                ),
+                TextButton(
+                  onPressed:
+                      isNoteEmpty
+                          ? null
+                          : () async {
+                            final now = DateTime.now();
+                            final newNote = Note(
+                              content: controller.text,
+                              createdAt: now,
+                              updatedAt: now,
+                            );
+                            await notesDatabase.createNote(newNote);
 
-              // save button
-              TextButton(
-                onPressed: () async {
-                  if (noteControllerr.text.trim().isEmpty) return;
-                  final now = DateTime.now();
-                  final newNote = Note(
-                    content: noteControllerr.text,
-                    createdAt: now,
-                    updatedAt: now,
-                  );
-                  await notesDatabase.createNote(newNote);
+                            Navigator.pop(context);
+                            controller.clear();
 
-                  Navigator.pop(context);
-                  noteControllerr.clear();
-                  setState(() {});
-                },
-                child: const Text("Save"),
-              ),
-            ],
-          ),
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (context) => NoteDetailPage(note: newNote),
+                              ),
+                            );
+                          },
+                  child: const Text("Save"),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
@@ -182,6 +201,14 @@ class _NotePageState extends State<NotePage> {
                     ],
                   ),
                 ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NoteDetailPage(note: note),
+                    ),
+                  );
+                },
               );
             },
           );
